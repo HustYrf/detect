@@ -56,18 +56,35 @@ public class AlarmServiceImpl implements AlarmService {
 		List<Alarm> alarmList = new ArrayList<Alarm>();
 		File file = new File(alarmDir);
 
+		if(file.exists()) {    //阻塞监听是否识别完成
+			boolean flag = true;
+			while (flag) {
+				File[] waitfiles = file.listFiles();
+				for (File file4 : waitfiles) {
+					if (!file4.isDirectory()) {
+						if(file4.getName().equals("end.jpg")) {
+							flag = false;
+						}
+					}			
+				}	
+			}
+		}
+				
 		if (file.exists()) {
 			File[] files = file.listFiles();
 			for (File file2 : files) {
 				if (file2.isDirectory()) {
 				} else {
+					if(file2.getName().equals("end.jpg")) {
+						continue;     //如果是结尾图片则不读取
+					}
 					Alarm alarm = new Alarm();
 					alarm.setUpdatetime(new Date());
 					alarm.setStatus(0);// 未处理告警
 					alarm.setTaskId(taskid);
 					alarm.setImageurl(file2.getName());
 					
-					
+					//生成缩略图文件并且保存在同一个目录里面
 					int pointPosition = file2.getName().lastIndexOf(".");
 					StringBuffer stringBuffer = new StringBuffer(file2.getName().substring(0, pointPosition));
 					stringBuffer.append("-thumbnail.");

@@ -3,6 +3,7 @@ package hust.detect.web.detect;
 
 /**
  * 该类用于识别图片 
+   暂时废弃，当前使用自动识别方案
  */
 public class Detector {
 	

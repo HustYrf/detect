@@ -2,6 +2,7 @@ package hust.detect.web.controller;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -10,7 +11,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.config.Task;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import hust.detect.service.interFace.AlarmService;
-
 
 @Controller
 public class IndexController {
@@ -30,8 +29,6 @@ public class IndexController {
 	@Autowired
 	private AlarmService alarmServiceImpl;
 	
-	
-
 	// 相应创建文件夹的命令
 	@RequestMapping(value = "makeTaskDir", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
@@ -136,7 +133,28 @@ public class IndexController {
 		return "error";
 	}
 	
-	
+	//手机端报告任务完成，在ImageResource文件夹新建一个end.txt文件表明文件上传完毕
+	@RequestMapping(value = "reportTaskOver", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String reportTaskOver(@RequestParam(value = "missionId") String missionId) {
+
+		String endfile = LOCAL_ALARM_DIR + missionId + "/ImageResource/"+"end.jpg" ;
+		File file = new File(endfile);
+		FileWriter fileWritter ;
+		try {
+			if(!file.exists()){
+			       file.createNewFile();
+			}
+			String reString = "taskover";
+			fileWritter = new FileWriter(file.getName(),true);
+		    fileWritter.write(reString);
+		    fileWritter.close();
+		    return "success";
+		}catch (Exception e) {
+			e.printStackTrace();
+			return "error";
+		}		
+	}
 	//返回图片名列表
 	@RequestMapping(value = "taskImages")
 	@ResponseBody
@@ -157,7 +175,6 @@ public class IndexController {
 	//测试项目是否启动成功
 	@RequestMapping("home")
 	public String home() {
-		System.out.println(alarmServiceImpl.hashCode()+"$$$$");
 		return "index";
 	}
 	
@@ -170,10 +187,25 @@ public class IndexController {
 	        File[] tempList = file.listFiles();
 	        for (int i = 0; i < tempList.length; i++) {
 	            if (tempList[i].isFile()) {
+            	  if(tempList[i].getName().equals("end.jpg"))   //如果是结束图片则跳过
+            		   continue;
 	              files.add(tempList[i].getName());
 	            }
 	        }
 	        return files;
 	}
+	 
+//	public static void main(String[] args) {
+//		
+//		String endfile = "D:\\end.jpg";
+//		File file = new File(endfile);
+//		try {
+//			if(!file.exists()){
+//			   file.createNewFile();
+//			}	
+//		}catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 }
