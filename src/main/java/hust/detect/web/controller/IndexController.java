@@ -2,7 +2,6 @@ package hust.detect.web.controller;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -140,16 +139,13 @@ public class IndexController {
 
 		String endfile = LOCAL_ALARM_DIR + missionId + "/ImageResource/"+"end.jpg" ;
 		File file = new File(endfile);
-		FileWriter fileWritter ;
 		try {
 			if(!file.exists()){
-			       file.createNewFile();
+			    file.createNewFile();
+			    return "success";
+			}else {   //可能文件已存在
+				return "exist";
 			}
-			String reString = "taskover";
-			fileWritter = new FileWriter(file.getName(),true);
-		    fileWritter.write(reString);
-		    fileWritter.close();
-		    return "success";
 		}catch (Exception e) {
 			e.printStackTrace();
 			return "error";
@@ -199,13 +195,20 @@ public class IndexController {
 //		
 //		String endfile = "D:\\end.jpg";
 //		File file = new File(endfile);
-//		try {
+//	    try {
 //			if(!file.exists()){
-//			   file.createNewFile();
-//			}	
+//			    file.createNewFile();
+//			    //return "success";
+//			    System.out.println("success");
+//			}else {
+//				//return "exist";
+//				System.out.println("exist");
+//			}
 //		}catch (Exception e) {
 //			e.printStackTrace();
-//		}
-//	}
+//			System.out.println("error");
+//			//return "error";
+//		}	
+//	 }
 
 }

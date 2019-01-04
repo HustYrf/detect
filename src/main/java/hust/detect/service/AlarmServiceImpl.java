@@ -50,46 +50,55 @@ public class AlarmServiceImpl implements AlarmService {
 		return true;
 	}
 
-	// 读取文件夹里面的文件，并且生成缩略图文件，命名为：原图片名--thumbnail.jpg  例如：5.jpg  ->  5-thumbnail.jpg
+	// 读取文件夹里面的文件，并且生成缩略图文件，命名为：原图片名--thumbnail.jpg 例如：5.jpg -> 5-thumbnail.jpg
 	public List<Alarm> processlcoaldir(int taskid, String alarmDir) {
 
 		List<Alarm> alarmList = new ArrayList<Alarm>();
 		File file = new File(alarmDir);
 
-		if(file.exists()) {    //阻塞监听是否识别完成
+		if (file.exists()) { // 阻塞监听是否识别完成
 			boolean flag = true;
 			while (flag) {
 				File[] waitfiles = file.listFiles();
 				for (File file4 : waitfiles) {
 					if (!file4.isDirectory()) {
-						if(file4.getName().equals("end.jpg")) {
+						if (file4.getName().equals("end.jpg")) {
 							flag = false;
 						}
-					}			
-				}	
+					}
+				}
 			}
 		}
-				
+
 		if (file.exists()) {
 			File[] files = file.listFiles();
+
 			for (File file2 : files) {
 				if (file2.isDirectory()) {
 				} else {
-					if(file2.getName().equals("end.jpg")) {
-						continue;     //如果是结尾图片则不读取
+					if (file2.getName().equals("end.jpg")) {
+						continue; // 如果是结尾图片则不读取
 					}
+					//生成缩略图 放到同一个文件夹里面
+					try {
+						Thumbnails.of(file2).scale(0.5). // 图片缩放50%, 不能和size()一起使用
+								toFiles(new File(alarmDir), Rename.SUFFIX_HYPHEN_THUMBNAIL);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+
 					Alarm alarm = new Alarm();
 					alarm.setUpdatetime(new Date());
 					alarm.setStatus(0);// 未处理告警
 					alarm.setTaskId(taskid);
 					alarm.setImageurl(file2.getName());
-					
-					//生成缩略图文件并且保存在同一个目录里面
+
+					// 生成缩略图文件并且保存在同一个目录里面
 					int pointPosition = file2.getName().lastIndexOf(".");
 					StringBuffer stringBuffer = new StringBuffer(file2.getName().substring(0, pointPosition));
 					stringBuffer.append("-thumbnail.");
-					stringBuffer.append(file2.getName().substring(pointPosition+1, file2.getName().length()));
-					
+					stringBuffer.append(file2.getName().substring(pointPosition + 1, file2.getName().length()));
+
 					alarm.setThumbnailurl(stringBuffer.toString());
 
 					try {
@@ -144,20 +153,34 @@ public class AlarmServiceImpl implements AlarmService {
 					}
 				}
 			}
+
 		} else {
 			System.out.println("文件不存在!");
 		}
-		
-		//生成缩略图
-		try {
-			Thumbnails.of(new File(alarmDir).listFiles()).
-				scale(0.5). // 图片缩放80%, 不能和size()一起使用
-				toFiles(new File(alarmDir), Rename.SUFFIX_HYPHEN_THUMBNAIL);// 指定的目录一定要存在,否则报错
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
 		return alarmList;
+	}
+
+	public static void main(String[] args) {
+
+		File file = new File("D:\\pic");
+		if (file.exists()) {
+			File[] files = file.listFiles();
+			for (File file2 : files) {
+				if (file2.isDirectory()) {
+				} else {
+					if (file2.getName().equals("end.jpg")) {
+						continue; // 如果是结尾图片则不读取
+					}					
+					try {
+						Thumbnails.of(file2).scale(0.5). // 图片缩放50%, 不能和size()一起使用
+								toFiles(new File("D:\\pic"), Rename.SUFFIX_HYPHEN_THUMBNAIL);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+		}
 	}
 
 	// 查找离 坐标最近的信息点
