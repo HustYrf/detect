@@ -161,7 +161,7 @@ public class AlarmServiceImpl implements AlarmService {
 		return alarmList;
 	}
 
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 
 		File file = new File("D:\\pic");
 		if (file.exists()) {
@@ -181,7 +181,7 @@ public class AlarmServiceImpl implements AlarmService {
 				}
 			}
 		}
-	}
+	}*/
 
 	// 查找离 坐标最近的信息点
 	public static InfoPoint getMinDisInfoPoint(RouteExcel routeExcel, List<InfoPoint> infoPoints) {
