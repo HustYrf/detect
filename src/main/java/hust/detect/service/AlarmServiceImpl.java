@@ -64,6 +64,7 @@ public class AlarmServiceImpl implements AlarmService {
 					if (!file4.isDirectory()) {
 						if (file4.getName().equals("end.jpg")) {
 							flag = false;
+							break;
 						}
 					}
 				}
@@ -138,15 +139,16 @@ public class AlarmServiceImpl implements AlarmService {
 
 						// 在这里匹配最近的信息点
 						List<String> geohash9area = GeohashUtil.getGeoHashBase32For9(routeExcel);
-
-						List<InfoPoint> infoPoints = infoPointMapper.getNearPointByGeohash(geohash9area);
-						if (infoPoints.size() == 0) {
-							alarm.setInfoname(null);
-						} else {
+						if(geohash9area.size()>0) {
+							List<InfoPoint> infoPoints = infoPointMapper.getNearPointByGeohash(geohash9area);
 							InfoPoint infoPoint = getMinDisInfoPoint(routeExcel, infoPoints);
 							alarm.setInfoname(infoPoint.getName());
 							alarm.setRouteId(infoPoint.getRouteId());
+						}else {
+							alarm.setInfoname(null);
+							alarm.setRouteId(null);
 						}
+						
 						alarmList.add(alarm);
 					} catch (Exception e) {
 						e.printStackTrace();

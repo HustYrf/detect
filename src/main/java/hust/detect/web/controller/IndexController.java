@@ -126,7 +126,9 @@ public class IndexController {
 	@ResponseBody
 	public String createAlarm(@RequestParam(value = "taskId")Integer taskid,@RequestParam(value = "missionId") String missionId) {
 
+	
 		String alarmDir = LOCAL_ALARM_DIR + missionId + "/ImageAlarm/" ;
+		
 		if (alarmServiceImpl.insertAlarm(taskid, alarmDir) == true)
 			return "success";
 		return "error";
@@ -170,7 +172,7 @@ public class IndexController {
 	
 	//测试项目是否启动成功
 	@RequestMapping("home")
-	public String home() {
+	public String home() {						
 		return "index";
 	}
 	
